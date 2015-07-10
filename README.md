@@ -13,14 +13,14 @@ detects him on the couch.
 
 ## Implementation
 
-*Disclaimer: I have no idea if the following is technically feasible.*
+**Disclaimer: I have no idea if the following is technically feasible.**
 
 I intent to point a webcam at the couch and plug it into a [Raspberry Pi][pi].
 The Pi will run a program, built with [OpenCV][opencv], that detects movement
 through the camera.
 
-When movement is detected, an unpleasantly loud alarm will sound. This might
-be achieved by plugging the Pi into my TV. My hope is that this will frighten
+When movement is detected, an unpleasantly loud alarm will sound. (This might
+be achieved by plugging the Pi into my TV.) My hope is that this will frighten
 Angus into getting off the couch.
 
 
