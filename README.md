@@ -10,6 +10,8 @@ My dog Angus realised that he can sleep on the couch when nobody's home to yell
 at him. I intend to implement a monitoring system that _will_ yell at him if it
 detects him on the couch.
 
+![](http://i.imgur.com/tiqTTZK.jpg)
+
 
 ## Implementation
 
