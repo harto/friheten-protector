@@ -26,6 +26,10 @@ be achieved by plugging the Pi into my TV.) My hope is that this will frighten
 Angus into getting off the couch.
 
 
+## References
+
+ * http://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
+
 
  [pi]: https://www.raspberrypi.org/products/raspberry-pi-2-model-b/
  [opencv]: http://opencv.org/
