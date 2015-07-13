@@ -1,21 +1,21 @@
-# Friheten-Protector
+# The Eye of Sauron
 
-An attempt to stop my dog from sleeping on my [couch][friheten] while I'm out of
-the apartment.
+An attempt to stop my dog from sleeping on my couch while I'm out of the
+apartment.
 
 
 ## Background
 
 My dog Angus realised that he can sleep on the couch when nobody's home to yell
-at him. I intend to implement a monitoring system that _will_ yell at him if it
-detects him on the couch.
+at him. I intend to implement a monitoring system that will watch the couch and
+yell at him if it detects him lying there.
 
 ![](http://i.imgur.com/tiqTTZK.jpg)
 
 
 ## Implementation
 
-**Disclaimer: I have no idea if the following is technically feasible.**
+_(Disclaimer: I have no idea if the following is technically feasible.)_
 
 I intent to point a webcam at the couch and plug it into a [Raspberry Pi][pi].
 The Pi will run a program, built with [OpenCV][opencv], that detects movement
@@ -27,6 +27,5 @@ Angus into getting off the couch.
 
 
 
- [friheten]: http://www.ikea.com/us/en/catalog/products/70243038/#/50242997
  [pi]: https://www.raspberrypi.org/products/raspberry-pi-2-model-b/
  [opencv]: http://opencv.org/
