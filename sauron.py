@@ -38,7 +38,7 @@ def process_frame(raw):
     if BACKGROUND is None:
         BACKGROUND = frame
     frame = cv2.absdiff(BACKGROUND, frame)
-    _, frame = cv2.threshold(frame, CHANGE_THRESHOLD, 255, cv2.THRESH_BINARY)
+    _, frame = cv2.threshold(frame, MIN_CHANGE_THRESHOLD, 255, cv2.THRESH_BINARY)
     # dilate to join broken contours
     frame = cv2.dilate(frame, None, iterations=2)
     rects = obscured_regions(frame)
