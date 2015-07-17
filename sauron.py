@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import numpy
 import cv2
 #import sys
@@ -7,7 +9,7 @@ import time
 BLUR_KERNEL = (21, 21)
 FRAME_WIDTH = 500
 MIN_CHANGE_AREA = 500
-MIN_CHANGE_THRESHOLD = 25
+MIN_CHANGE_THRESHOLD = 50
 
 def resize(image, width):
     orig_h, orig_w = image.shape[:2]
@@ -16,7 +18,6 @@ def resize(image, width):
     return cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
 
 def preprocess_frame(frame):
-    frame = resize(frame, width=FRAME_WIDTH)
     # Colour is irrelevant to motion detection
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # Remove noise etc.
@@ -47,19 +48,23 @@ def process_frame(raw):
     cv2.imshow('raw', raw)
     cv2.imshow('filtered', frame)
 
+def key_pressed(key):
+    return cv2.waitKey(1) & 0xFF == ord(key)
+
 def finished():
-    return cv2.waitKey(1) & 0xFF == ord('q')
+    return key_pressed('q')
 
 def process_video(video):
     while True:
         success, frame = video.read()
         if not success or finished():
             break
+        frame = resize(frame, width=FRAME_WIDTH)
         process_frame(frame)
 
 if __name__ == '__main__':
     cam = cv2.VideoCapture(0)
-    time.sleep(0.25) # fixme
+    time.sleep(0.25) # fixme: proper wait
     process_video(cam)
     cv2.destroyAllWindows()
     cam.release()
