@@ -18,4 +18,4 @@ sudo apt-get install -y libatlas-base-dev gfortran
 
 # Python tools
 sudo apt-get install -y python-pip python2.7-d
-pip install virtualenv
+sudo pip install virtualenv

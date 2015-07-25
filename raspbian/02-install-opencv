@@ -1,22 +1,31 @@
-#!/usr/bin/env/ bash
+#!/usr/bin/env bash
 set -euo pipefail
 
-VERSION=2.4.10
+OPENCV_VERSION="2.4.11"
 
-cd "$(dirname $0)/.."
+ROOT="$(cd $(dirname $0)/.. && pwd -P)"
 
-virtualenv env
-. env/bin/activate
+VIRTUALENV="${ROOT}/env"
+
+virtualenv $VIRTUALENV
+
+# don't crash on unbound vars in virtualenv activation script
+set +u
+source "$VIRTUALENV/bin/activate"
+set -u
 
 pip install numpy
 
-mkdir -p tmp
-wget -O tmp/opencv-${VERSION}.zip http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/${VERSION}/opencv-${VERSION}.zip/download
-unzip tmp/opencv-${VERSION}.zip
+TMP="${ROOT}/tmp"
 
-cd tmp/opencv-${VERSION}
-mkdir build
-cd build
+mkdir -p "$TMP"
+wget -O "${TMP}/opencv-${OPENCV_VERSION}.zip" "http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/${OPENCV_VERSION}/opencv-${OPENCV_VERSION}.zip/download"
+unzip -d "$TMP" "${TMP}/opencv-${OPENCV_VERSION}.zip"
+
+BUILD="${TMP}/opencv-${OPENCV_VERSION}/build"
+
+mkdir -P "$BUILD"
+cd "$BUILD"
 cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D CMAKE_INSTALL_PREFIX=/usr/local \
       -D BUILD_NEW_PYTHON_SUPPORT=ON \
@@ -29,6 +38,4 @@ make
 sudo make install
 sudo ldconfig
 
-# cd ~/.virtualenvs/cv/lib/python2.7/site-packages/
-# ln -s /usr/local/lib/python2.7/site-packages/cv2.so cv2.so
-# ln -s /usr/local/lib/python2.7/site-packages/cv.py cv.py
+ln -s /usr/local/lib/python2.7/site-packages/{cv2.so,cv.py} "${VIRTUALENV}/lib/python2.7/site-packages"
