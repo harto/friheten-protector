@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+WORKING_DIR="$(cd $(dirname $0)/..; pwd -P)"
+REMOTE_HOST="raspberrypi"
+REMOTE_DIR="/home/pi/sauron"
+
+rsync --recursive \
+      --exclude="${WORKING_DIR}/.git" \
+      --exclude-from="${WORKING_DIR}/.gitignore" \
+      --delete \
+      "${WORKING_DIR}/" "${REMOTE_HOST}:${REMOTE_DIR}/"
