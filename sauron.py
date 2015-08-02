@@ -2,6 +2,7 @@
 
 import numpy
 import cv2
+import os
 #import sys
 import time
 
@@ -10,6 +11,7 @@ BLUR_KERNEL = (21, 21)
 FRAME_WIDTH = 500
 MIN_CHANGE_AREA = 500
 MIN_CHANGE_THRESHOLD = 50
+OUTPUT_CODEC = cv2.cv.CV_FOURCC(*'MPEG') #cv2.VideoWriter_fourcc(*'MPEG')
 
 def resize(image, width):
     orig_h, orig_w = image.shape[:2]
@@ -45,26 +47,37 @@ def process_frame(raw):
     rects = obscured_regions(frame)
     for (x, y, w, h) in rects:
         cv2.rectangle(raw, (x, y), (x + w, y + h), color=(0, 255, 0), thickness=2)
-    cv2.imshow('raw', raw)
-    cv2.imshow('filtered', frame)
+    # cv2.imshow('raw', raw)
+    # cv2.imshow('filtered', frame)
 
 def key_pressed(key):
     return cv2.waitKey(1) & 0xFF == ord(key)
 
+def frames(input):
+    while True:
+        success, frame = input.read()
+        if success:
+            yield frame
+        else:
+            return
+
 def finished():
     return key_pressed('q')
 
-def process_video(video):
-    while True:
-        success, frame = video.read()
-        if not success or finished():
-            break
-        frame = resize(frame, width=FRAME_WIDTH)
-        process_frame(frame)
+def process_video(input, output):
+    for frame in frames(input):
+        if finished(): break
+        resized = resize(frame, width=FRAME_WIDTH)
+        process_frame(resized)
+        output.write(resized)
 
 if __name__ == '__main__':
     cam = cv2.VideoCapture(0)
-    time.sleep(0.25) # fixme: proper wait
-    process_video(cam)
-    cv2.destroyAllWindows()
+    path = os.path.join(os.path.dirname(__file__), 'tmp', 'out.mpg')
+    print 'writing to %s' % path
+    file = cv2.VideoWriter(path, OUTPUT_CODEC, 24.0, (500, 375), True)
+    time.sleep(1) # fixme: proper wait
+    process_video(cam, file)
     cam.release()
+    file.release()
+    # cv2.destroyAllWindows()
