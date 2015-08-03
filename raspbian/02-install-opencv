@@ -24,7 +24,7 @@ unzip -d "$TMP" "${TMP}/opencv-${OPENCV_VERSION}.zip"
 
 BUILD="${TMP}/opencv-${OPENCV_VERSION}/build"
 
-mkdir -P "$BUILD"
+mkdir -p "$BUILD"
 cd "$BUILD"
 cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D CMAKE_INSTALL_PREFIX=/usr/local \
