@@ -33,7 +33,7 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D INSTALL_PYTHON_EXAMPLES=ON \
       -D BUILD_EXAMPLES=ON \
       ..
-make
+make -j4
 
 sudo make install
 sudo ldconfig
