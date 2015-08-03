@@ -3,3 +3,12 @@ set -euo pipefail
 
 brew install homebrew/science/opencv3
 echo /usr/local/opt/opencv3/lib/python2.7/site-packages >> /usr/local/lib/python2.7/site-packages/opencv3.pth
+
+ROOT="$(cd $(dirname $0); pwd -P)"
+VIRTUALENV="${ROOT}/env"
+
+pip install virtualenv
+virtualenv "$VIRTUALENV"
+. "${VIRTUALENV}/bin/activate"
+pip install -r "${ROOT}/requirements.txt"
+ln -s /usr/local/lib/python2.7/site-packages/opencv3.pth "${VIRTUALENV}/lib/python2.7/site-packages"

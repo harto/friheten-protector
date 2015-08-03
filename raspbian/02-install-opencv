@@ -14,7 +14,7 @@ set +u
 source "$VIRTUALENV/bin/activate"
 set -u
 
-pip install numpy
+pip install -r "${ROOT}/requirements.txt"
 
 TMP="${ROOT}/tmp"
 
@@ -38,4 +38,4 @@ make -j4
 sudo make install
 sudo ldconfig
 
-ln -s /usr/local/lib/python2.7/site-packages/{cv2.so,cv.py} "${VIRTUALENV}/lib/python2.7/site-packages"
+ln -s /usr/local/lib/python2.7/site-packages/cv2.so "${VIRTUALENV}/lib/python2.7/site-packages"
