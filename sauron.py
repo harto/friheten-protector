@@ -27,9 +27,9 @@ def preprocess_frame(frame):
     return frame
 
 def obscured_regions(image):
-    (contours, _) = cv2.findContours(image.copy(),
-                                     cv2.RETR_EXTERNAL,
-                                     cv2.CHAIN_APPROX_SIMPLE)
+    (_, contours, _) = cv2.findContours(image.copy(),
+                                        cv2.RETR_EXTERNAL,
+                                        cv2.CHAIN_APPROX_SIMPLE)
     return (cv2.boundingRect(c) for c in contours
             if cv2.contourArea(c) >= MIN_CHANGE_AREA)
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-brew install homebrew/science/opencv
+brew install homebrew/science/opencv3
+echo /usr/local/opt/opencv3/lib/python2.7/site-packages >> /usr/local/lib/python2.7/site-packages/opencv3.pth
