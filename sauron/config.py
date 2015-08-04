@@ -1,15 +1,16 @@
 from derpconf.config import Config
 from os import path
 
-Config.define('INPUT_FRAME_WIDTH', 500, 'Downscaled width of input frames', 'Input')
+Config.define('FRAME_WIDTH', 500, 'Width of video frames', 'General')
+
 Config.define('BLUR_KERNEL', (21, 21), 'Size of blur filter for input normalisation (must be odd numbers)', 'Input')
 
 Config.define('MIN_CHANGE_THRESHOLD', 50, 'Pixel value change threshold for detection events', 'Detection')
-Config.define('MIN_CHANGE_AREA', 500, 'Minimum number of changed pixels for detection events', 'Detection')
+Config.define('MIN_CHANGE_AREA', 400, 'Minimum number of changed pixels for detection events', 'Detection')
 
-Config.define('OUTPUT_FRAME_SIZE', (500, 375), 'Width of output frames', 'Output')
+Config.define('OUTPUT_DIR', path.join(path.dirname(__file__), '..', 'tmp'), 'Directory to store captures in', 'Output')
 Config.define('OUTPUT_FPS', 24, 'Frames per second of output video', 'Output')
-Config.define('OUTPUT_FORMAT', 'MPEG', 'Four character code of output video format', 'Output')
+Config.define('OUTPUT_FORMAT', 'MJPG', 'Four character code of output video format', 'Output')
 
 _config = None
 
