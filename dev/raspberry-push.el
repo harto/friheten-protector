@@ -1,3 +1,5 @@
+(require 'find-things-fast)
+
 (defun raspberry-push-command ()
   (expand-file-name "dev/raspberry-push" (ftf-project-directory)))
 
