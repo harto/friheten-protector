@@ -1,10 +1,12 @@
 import cv2
 import time
+from sauron.capture import read_frames
 from sauron import config
-from sauron.video_input import read_frames
+from sauron.recording import Recording
 
 background = None
 state = 'waiting'
+recording = None
 
 def detect_motion(input):
     global background
@@ -13,23 +15,22 @@ def detect_motion(input):
     background = frames.next()
     cv2.imshow('bg', background.raw)
     for frame in frames:
-        analyse_frame(frame)
+        process_frame(frame)
 
 def process_frame(frame):
-    global state
+    global state, recording
     rects = find_diff_regions(background.processed, frame.processed)
     motion_detected = len(rects)
 
     if motion_detected:
         if state == 'waiting':
             state = 'capturing'
-            capture = init_capture()
-        capture.write(frame, rects)
+            recording = Recording.create()
+        recording.write(frame, rects)
     else:
         if state == 'capturing':
             state = 'waiting'
-            capture.close()
-            capture.notify()
+            recording.finish()
 
 def find_diff_regions(a, b):
     diff = cv2.absdiff(a, b)
@@ -42,5 +43,5 @@ def find_diff_regions(a, b):
     (_, contours, _) = cv2.findContours(diff,
                                         cv2.RETR_EXTERNAL,
                                         cv2.CHAIN_APPROX_SIMPLE)
-    return (cv2.boundingRect(c) for c in contours
-            if cv2.contourArea(c) >= config.get('MIN_CHANGE_AREA'))
+    return [cv2.boundingRect(c) for c in contours
+            if cv2.contourArea(c) >= config.get('MIN_CHANGE_AREA')]
