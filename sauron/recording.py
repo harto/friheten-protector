@@ -5,20 +5,18 @@ import time
 
 class Recording(object):
 
-    def __init__(self, output_dir, bg):
+    def __init__(self, output_dir):
         self.output_dir = output_dir
         self.frame_count = 0
-        self.last_frame_time = time.time()
-        self.write_image(bg.raw, 'bg')
+        self.last_write_time = time.time()
 
     def write(self, frame, rects):
         now = time.time()
-        if now - self.last_frame_time < 1.0:
-            return
+        if now - self.last_write_time < 1.0: return
         image = self.overlay(frame.raw.copy(), rects)
         self.write_image(image, '%02d' % self.frame_count)
         self.frame_count += 1
-        self.last_frame_time = now
+        self.last_write_time = now
 
     def write_image(self, image, filename):
         output_path = path.join(self.output_dir, '%s.jpg' % filename)

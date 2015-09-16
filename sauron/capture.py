@@ -14,11 +14,6 @@ def create_frame(image):
     processed = process(raw)
     return Frame(raw, processed)
 
-class Frame(object):
-    def __init__(self, raw, processed):
-        self.raw = raw
-        self.processed = processed
-
 def downscale(image):
     orig_h, orig_w = image.shape[:2]
     width = config.get('FRAME_WIDTH')
@@ -34,3 +29,23 @@ def process(image):
     # Remove noise
     processed = cv2.GaussianBlur(processed, config.get('BLUR_KERNEL'), 0)
     return processed
+
+class Frame(object):
+
+    def __init__(self, raw, processed):
+        self.raw = raw
+        self.processed = processed
+
+    def diffs(self, other):
+        diff = cv2.absdiff(self.processed, other.processed)
+        _, diff = cv2.threshold(diff,
+                                config.get('MIN_CHANGE_THRESHOLD'),
+                                255,
+                                cv2.THRESH_BINARY)
+        # dilate to join broken contours
+        diff = cv2.dilate(diff, None, iterations=2)
+        (_, contours, _) = cv2.findContours(diff,
+                                            cv2.RETR_EXTERNAL,
+                                            cv2.CHAIN_APPROX_SIMPLE)
+        return [cv2.boundingRect(c) for c in contours
+                if cv2.contourArea(c) >= config.get('MIN_CHANGE_AREA')]

@@ -6,51 +6,44 @@ from sauron import config
 from sauron.recording import Recording
 import time
 
-background = None
-state = 'waiting'
-recording = None
+class Detector(object):
 
-def detect_motion(input):
-    global background
-    time.sleep(2) # fixme: await input initialisation
-    frames = read_frames(input)
-    frames.next() # eat first frame; sometimes corrupted
-    background = frames.next()
-    for frame in frames:
-        process_frame(frame)
+    def __init__(self, source):
+        self.source = source
+        self.background = None
+        self.recording = None
+        self.state = 'waiting'
 
-def process_frame(frame):
-    global state, recording
-    rects = find_diff_regions(background.processed, frame.processed)
-    motion_detected = len(rects)
+    def detect(self):
+        self.setup()
+        for frame in self.frames():
+            self.process_frame(frame)
 
-    if motion_detected:
-        if state == 'waiting':
-            state = 'capturing'
-            recording = create_recording()
-        recording.write(frame, rects)
-    else:
-        if state == 'capturing':
-            state = 'waiting'
-            recording.finish()
+    def setup(self):
+        time.sleep(1) # fixme: await input initialisation
+        frames = self.frames()
+        _ = frames.next() # eat first frame; sometimes corrupted
+        self.background = frames.next()
 
-def find_diff_regions(a, b):
-    diff = cv2.absdiff(a, b)
-    _, diff = cv2.threshold(diff,
-                            config.get('MIN_CHANGE_THRESHOLD'),
-                            255,
-                            cv2.THRESH_BINARY)
-    # dilate to join broken contours
-    diff = cv2.dilate(diff, None, iterations=2)
-    (_, contours, _) = cv2.findContours(diff,
-                                        cv2.RETR_EXTERNAL,
-                                        cv2.CHAIN_APPROX_SIMPLE)
-    return [cv2.boundingRect(c) for c in contours
-            if cv2.contourArea(c) >= config.get('MIN_CHANGE_AREA')]
+    def frames(self):
+        return read_frames(self.source)
 
-def create_recording():
-    output_dir = path.join(config.get('OUTPUT_DIR'),
-                           datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
-    print 'writing to %s' % output_dir
-    makedirs(output_dir)
-    return Recording(output_dir, background)
+    def process_frame(self, frame):
+        diffs = self.background.diffs(frame)
+        if len(diffs):
+            if self.state == 'waiting':
+                self.state = 'capturing'
+                self.new_recording()
+            self.recording.write(frame, diffs)
+        else:
+            if self.state == 'capturing':
+                self.recording.finish()
+                self.state = 'waiting'
+
+    def new_recording(self):
+        output_dir = path.join(config.get('OUTPUT_DIR'),
+                               datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
+        print 'writing to %s' % output_dir
+        if not path.exists(output_dir): makedirs(output_dir)
+        self.recording = Recording(output_dir)
+        self.recording.write_image(self.background.raw, 'bg')
