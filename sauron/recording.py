@@ -12,7 +12,7 @@ class Recording(object):
 
     def write(self, frame, rects):
         now = time.time()
-        if now - self.last_write_time < 1.0: return
+        if now - self.last_write_time < 1.0 / config.get('OUTPUT_FPS'): return
         image = self.overlay(frame.raw.copy(), rects)
         self.write_image(image, '%02d' % self.frame_count)
         self.frame_count += 1
