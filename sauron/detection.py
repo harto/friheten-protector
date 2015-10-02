@@ -46,4 +46,4 @@ class Detector(object):
         print 'writing to %s' % output_dir
         if not path.exists(output_dir): makedirs(output_dir)
         self.recording = Recording(output_dir)
-        self.recording.write_image(self.background.raw, 'bg')
+        self.recording.write_image(self.background.raw)

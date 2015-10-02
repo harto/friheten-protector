@@ -1,4 +1,5 @@
 import cv2
+from datetime import datetime
 from os import path
 from sauron import config
 import time
@@ -14,12 +15,13 @@ class Recording(object):
         now = time.time()
         if now - self.last_write_time < 1.0 / config.get('OUTPUT_FPS'): return
         image = self.overlay(frame.raw.copy(), rects)
-        self.write_image(image, '%02d' % self.frame_count)
+        self.write_image(image)
         self.frame_count += 1
         self.last_write_time = now
 
-    def write_image(self, image, filename):
-        output_path = path.join(self.output_dir, '%s.jpg' % filename)
+    def write_image(self, image):
+        filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f.jpg')
+        output_path = path.join(self.output_dir, filename)
         cv2.imwrite(output_path, image)
         print 'wrote %s' % output_path
 
