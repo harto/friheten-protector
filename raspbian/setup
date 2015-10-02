@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")"
+./00-prepare
+./01-opencv-deps
+./02-install-opencv
+./03-install-imagemagick
