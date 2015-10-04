@@ -1,10 +1,18 @@
 import cv2
 from datetime import datetime
-from os import path
+from os import makedirs, path
 from sauron import config
 import time
 
 class Recording(object):
+
+    @classmethod
+    def setup(cls):
+        output_dir = path.join(config.get('OUTPUT_DIR'),
+                               datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
+        print 'writing to %s' % output_dir
+        if not path.exists(output_dir): makedirs(output_dir)
+        return cls(output_dir)
 
     def __init__(self, output_dir):
         self.output_dir = output_dir
@@ -34,5 +42,5 @@ class Recording(object):
                           thickness=2)
         return image
 
-    def finish(self):
+    def finalise(self):
         print 'finalising recording'

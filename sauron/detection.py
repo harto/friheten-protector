@@ -1,12 +1,9 @@
 import cv2
-from datetime import datetime
-from os import makedirs, path
 from sauron.capture import read_frames
-from sauron import config
 from sauron.recording import Recording
 import time
 
-class Detector(object):
+class MotionDetector(object):
 
     def __init__(self, source):
         self.source = source
@@ -37,13 +34,9 @@ class Detector(object):
             self.recording.write(frame, diffs)
         else:
             if self.state == 'capturing':
-                self.recording.finish()
+                self.recording.finalise()
                 self.state = 'waiting'
 
     def new_recording(self):
-        output_dir = path.join(config.get('OUTPUT_DIR'),
-                               datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
-        print 'writing to %s' % output_dir
-        if not path.exists(output_dir): makedirs(output_dir)
-        self.recording = Recording(output_dir)
+        self.recording = Recording.setup()
         self.recording.write_image(self.background.raw)
