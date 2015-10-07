@@ -6,6 +6,8 @@ from sauron.detection import MotionDetector
 if __name__ == '__main__':
     config.init()
     camera = cv2.VideoCapture(0)
-    MotionDetector(camera).detect()
-    #cv2.destroyAllWindows()
+    try:
+        MotionDetector(camera).detect()
+    except KeyboardInterrupt:
+        pass
     camera.release()
