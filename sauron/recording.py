@@ -1,7 +1,10 @@
 import cv2
 from datetime import datetime
-from os import makedirs, path
+from os import makedirs, path, rmdir
+from glob import glob
 from sauron import config
+import shutil
+import subprocess
 import time
 
 class Recording(object):
@@ -44,3 +47,19 @@ class Recording(object):
 
     def finalise(self):
         print 'finalising recording'
+        input_files = sorted(glob(path.join(self.output_dir, '*')))
+        output_filename = "%s.gif" % self.output_dir
+        args = ['convert',
+                '-delay',
+                str(int(100.0 / config.get('OUTPUT_FPS'))),
+                '-loop',
+                '0']
+        args += input_files
+        args += [output_filename]
+        exit_status = subprocess.call(args)
+        if exit_status == 0:
+            print 'wrote %s' % output_filename
+            shutil.rmtree(self.output_dir)
+            return output_filename
+        else:
+            print 'error writing %s' % output_filename
