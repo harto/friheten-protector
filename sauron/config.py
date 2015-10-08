@@ -8,7 +8,6 @@ Config.define('BLUR_KERNEL', (21, 21), 'Size of blur filter for input normalisat
 Config.define('MIN_CHANGE_THRESHOLD', 50, 'Pixel value change threshold for detection events', 'Detection')
 Config.define('MIN_CHANGE_AREA', 400, 'Minimum number of changed pixels for detection events', 'Detection')
 
-Config.define('OUTPUT_DIR', path.join(path.dirname(__file__), '..', 'tmp'), 'Directory to store captures in', 'Output')
 Config.define('OUTPUT_FPS', 5, 'Frames per second of output video', 'Output')
 
 _config = None

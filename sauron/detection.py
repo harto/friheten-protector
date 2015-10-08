@@ -1,5 +1,6 @@
 import cv2
 from sauron.recording import Recording
+from sauron.upload import upload_video
 import time
 
 class MotionDetector(object):
@@ -36,4 +37,4 @@ class MotionDetector(object):
 
     def finalise_recording(self):
         path = self.recording.finalise()
-        # upload
+        upload_video(path)

@@ -10,10 +10,8 @@ import time
 class Recording(object):
 
     @classmethod
-    def setup(cls):
-        output_dir = path.join(config.get('OUTPUT_DIR'),
-                               datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
-        print 'writing to %s' % output_dir
+    def setup(cls): # FIXME: needs better name
+        output_dir = path.join('/tmp', datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
         if not path.exists(output_dir): makedirs(output_dir)
         return cls(output_dir)
 
@@ -34,7 +32,6 @@ class Recording(object):
         filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f.jpg')
         output_path = path.join(self.output_dir, filename)
         cv2.imwrite(output_path, image)
-        print 'wrote %s' % output_path
 
     def overlay(self, image, rects):
         for (x, y, w, h) in rects:
