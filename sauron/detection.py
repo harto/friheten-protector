@@ -16,9 +16,6 @@ class MotionDetector(object):
         for frame in self.frames:
             self.process_frame(frame)
 
-    def frames(self):
-        return read_frames(self.source)
-
     def process_frame(self, frame):
         diffs = self.background.diffs(frame)
         if len(diffs):
