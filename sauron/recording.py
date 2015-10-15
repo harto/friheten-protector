@@ -1,11 +1,10 @@
 import cv2
-from datetime import datetime
+from datetime import datetime, timedelta
 from os import makedirs, path, rmdir
 from glob import glob
 from sauron import config
 import shutil
 import subprocess
-import time
 
 class Recording(object):
 
@@ -15,18 +14,22 @@ class Recording(object):
         if not path.exists(output_dir): makedirs(output_dir)
         return cls(output_dir)
 
-    def __init__(self, output_dir):
+    def __init__(self, output_dir, started_at):
         self.output_dir = output_dir
         self.frame_count = 0
-        self.last_write_time = time.time()
+        self.started_at = started_at
+        self.last_write_time = started_at
 
     def write(self, frame, rects):
-        now = time.time()
-        if now - self.last_write_time < 1.0 / config.get('OUTPUT_FPS'): return
+        if self.time_since_last_write(frame) < (1.0 / config.get('OUTPUT_FPS')):
+            return
         image = self.overlay(frame.raw.copy(), rects)
         self.write_image(image)
         self.frame_count += 1
-        self.last_write_time = now
+        self.last_write_time = frame.time
+
+    def time_since_last_write(frame):
+        fixme
 
     def write_image(self, image):
         filename = datetime.now().strftime('%Y%m%d%H%M%S%f.jpg')

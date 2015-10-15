@@ -13,5 +13,6 @@ if __name__ == '__main__':
     try:
         MotionDetector(frames).detect()
     except KeyboardInterrupt:
+        # todo: clean up gracefully
         pass
     camera.release()
