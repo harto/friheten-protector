@@ -1,5 +1,7 @@
 import cv2
+from datetime import datetime
 from sauron import config
+import time
 
 def read_frames(video):
     while True:
@@ -12,7 +14,7 @@ def read_frames(video):
 def create_frame(image):
     raw = downscale(image)
     processed = process(raw)
-    return Frame(raw, processed)
+    return Frame(raw, processed, time.time())
 
 def downscale(image):
     orig_h, orig_w = image.shape[:2]
@@ -32,9 +34,14 @@ def process(image):
 
 class Frame(object):
 
-    def __init__(self, raw, processed):
+    def __init__(self, raw, processed, time):
         self.raw = raw
         self.processed = processed
+        self.time = time
+
+    @property
+    def datetime(self):
+        return datetime.fromtimestamp(self.time)
 
     def diffs(self, other):
         diff = cv2.absdiff(self.processed, other.processed)

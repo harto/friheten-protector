@@ -1,36 +1,37 @@
 import cv2
 from datetime import datetime
-from os import makedirs, path, rmdir
+from os import path, rmdir
 from glob import glob
 from sauron import config
 import shutil
 import subprocess
-import time
+import tempfile
 
 class Recording(object):
 
     @classmethod
-    def setup(cls): # FIXME: needs better name
-        output_dir = path.join('/tmp', datetime.now().strftime('recording-%Y%m%d%H%M%S'))
-        if not path.exists(output_dir): makedirs(output_dir)
-        return cls(output_dir)
+    def prepare(cls, background):
+        output_dir = tempfile.mkdtemp()
+        recording = cls(output_dir)
+        recording.write_frame(background)
+        return recording
 
     def __init__(self, output_dir):
         self.output_dir = output_dir
-        self.frame_count = 0
-        self.last_write_time = time.time()
+        self.frame_delay = 1.0 / config.get('OUTPUT_FPS')
 
-    def write(self, frame, rects):
-        now = time.time()
-        if now - self.last_write_time < 1.0 / config.get('OUTPUT_FPS'): return
+    def write_frame(self, frame, rects = ()):
         image = self.overlay(frame.raw.copy(), rects)
-        self.write_image(image)
-        self.frame_count += 1
-        self.last_write_time = now
+        self.write_image(image, frame.datetime.strftime('%Y%m%d%H%M%S%f'))
+        self.last_write_time = frame.time
 
-    def write_image(self, image):
-        filename = datetime.now().strftime('%Y%m%d%H%M%S%f.jpg')
-        output_path = path.join(self.output_dir, filename)
+    def should_write(self, frame):
+        return (not self.last_write_time) or \
+            (frame.time - self.last_write_time >= self.frame_delay)
+
+    def write_image(self, image, seq):
+        output_path = path.join(self.output_dir, seq + '.jpg')
+        print 'writing %s' % output_path
         cv2.imwrite(output_path, image)
 
     def overlay(self, image, rects):
@@ -42,21 +43,19 @@ class Recording(object):
                           thickness=2)
         return image
 
-    def finalise(self):
+    def finalise(self, name):
         print 'finalising recording'
-        input_files = sorted(glob(path.join(self.output_dir, '*')))
-        output_filename = "%s.gif" % self.output_dir
+        input_paths = sorted(glob(path.join(self.output_dir, '*')))
+        output_path = path.join('/tmp', name + '.gif')
         args = ['convert',
-                '-delay',
-                str(int(100.0 / config.get('OUTPUT_FPS'))),
-                '-loop',
-                '0']
-        args += input_files
-        args += [output_filename]
+                '-delay', str(int(100.0 / config.get('OUTPUT_FPS'))),
+                '-loop', '0']
+        args += input_paths
+        args += [output_path]
         exit_status = subprocess.call(args)
         if exit_status == 0:
-            print 'wrote %s' % output_filename
+            print 'wrote %s' % output_path
             shutil.rmtree(self.output_dir)
-            return output_filename
+            return output_path
         else:
-            print 'error writing %s' % output_filename
+            print 'error writing %s' % output_path
