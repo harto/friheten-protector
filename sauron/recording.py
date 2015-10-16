@@ -10,10 +10,10 @@ import tempfile
 class Recording(object):
 
     @classmethod
-    def prepare(cls, background):
+    def prepare(cls):
         output_dir = tempfile.mkdtemp()
+        print 'writing frames to %s' % output_dir
         recording = cls(output_dir)
-        recording.write_frame(background)
         return recording
 
     def __init__(self, output_dir):
@@ -31,7 +31,7 @@ class Recording(object):
 
     def write_image(self, image, seq):
         output_path = path.join(self.output_dir, seq + '.jpg')
-        print 'writing %s' % output_path
+        #print 'writing %s' % output_path
         cv2.imwrite(output_path, image)
 
     def overlay(self, image, rects):
@@ -46,7 +46,7 @@ class Recording(object):
     def finalise(self, name):
         print 'finalising recording'
         input_paths = sorted(glob(path.join(self.output_dir, '*')))
-        output_path = path.join('/tmp', name + '.gif')
+        output_path = path.join(tempfile.gettempdir(), name + '.gif')
         args = ['convert',
                 '-delay', str(int(100.0 / config.get('OUTPUT_FPS'))),
                 '-loop', '0']
