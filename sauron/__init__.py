@@ -10,7 +10,7 @@ if __name__ == '__main__':
     config.init()
 
     camera = cv2.VideoCapture(0)
-    time.sleep(0.5)
+    time.sleep(2)
     frames = read_frames(camera)
     # eat first frame; sometimes corrupted
     _ = frames.next()
