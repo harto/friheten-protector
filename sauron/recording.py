@@ -18,16 +18,26 @@ class Recording(object):
 
     def __init__(self, output_dir):
         self.output_dir = output_dir
-        self.frame_delay = 1.0 / config.get('OUTPUT_FPS')
+        self.first_write_time = None
+        self.last_write_time = None
 
     def write_frame(self, frame, rects = ()):
         image = self.overlay(frame.raw.copy(), rects)
         self.write_image(image, frame.datetime.strftime('%Y%m%d%H%M%S%f'))
+        if not self.first_write_time:
+            self.first_write_time = frame.time
         self.last_write_time = frame.time
 
     def should_write(self, frame):
-        return (not self.last_write_time) or \
-            (frame.time - self.last_write_time >= self.frame_delay)
+        return not (self.exceeds_max_fps(frame) or self.exceeds_max_duration(frame))
+
+    def exceeds_max_fps(self, frame):
+        return self.last_write_time and \
+            frame.time - self.last_write_time < 1.0 / config.get('OUTPUT_FPS')
+
+    def exceeds_max_duration(self, frame):
+        return self.first_write_time and \
+            frame.time - self.first_write_time > config.get('MAX_RECORDING_SECONDS')
 
     def write_image(self, image, seq):
         output_path = path.join(self.output_dir, seq + '.jpg')
