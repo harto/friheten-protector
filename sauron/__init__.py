@@ -1,14 +1,11 @@
 import numpy
 import cv2
-from sauron import config
 from sauron.capture import read_frames
 from sauron.detection import MotionDetector
 import signal
 import time
 
 if __name__ == '__main__':
-    config.init()
-
     camera = cv2.VideoCapture(0)
     time.sleep(2)
     frames = read_frames(camera)

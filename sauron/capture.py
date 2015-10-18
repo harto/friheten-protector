@@ -18,7 +18,7 @@ def create_frame(image):
 
 def downscale(image):
     orig_h, orig_w = image.shape[:2]
-    width = config.get('FRAME_WIDTH')
+    width = int(config.get('FRAME_WIDTH'))
     ratio = width / float(orig_w)
     height = int(orig_h * ratio)
     return cv2.resize(image,
@@ -29,7 +29,9 @@ def process(image):
     # Discard colour information; irrelevant to motion detection
     processed = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # Remove noise
-    processed = cv2.GaussianBlur(processed, config.get('BLUR_KERNEL'), 0)
+    blur_kernel = (int(config.get('BLUR_KERNEL_WIDTH')),
+                   int(config.get('BLUR_KERNEL_HEIGHT')))
+    processed = cv2.GaussianBlur(processed, blur_kernel, 0)
     return processed
 
 class Frame(object):
@@ -46,7 +48,7 @@ class Frame(object):
     def diffs(self, other):
         diff = cv2.absdiff(self.processed, other.processed)
         _, diff = cv2.threshold(diff,
-                                config.get('MIN_CHANGE_THRESHOLD'),
+                                int(config.get('MIN_CHANGE_THRESHOLD')),
                                 255,
                                 cv2.THRESH_BINARY)
         # dilate to join broken contours
@@ -55,7 +57,7 @@ class Frame(object):
                                             cv2.RETR_EXTERNAL,
                                             cv2.CHAIN_APPROX_SIMPLE)
         return [cv2.boundingRect(c) for c in contours
-                if cv2.contourArea(c) >= config.get('MIN_CHANGE_AREA')]
+                if cv2.contourArea(c) >= int(config.get('MIN_CHANGE_AREA'))]
 
     def overlay_rect(self, rect):
         (x, y, w, h) = rect

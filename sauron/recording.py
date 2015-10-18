@@ -32,11 +32,11 @@ class Recording(object):
 
     def exceeds_max_fps(self, frame):
         return self.last_write_time and \
-            frame.time - self.last_write_time < 1.0 / config.get('OUTPUT_FPS')
+            frame.time - self.last_write_time < 1.0 / int(config.get('OUTPUT_FPS'))
 
     def exceeds_max_duration(self, frame):
         return self.first_write_time and \
-            frame.time - self.first_write_time > config.get('MAX_RECORDING_SECONDS')
+            frame.time - self.first_write_time > int(config.get('MAX_RECORDING_SECONDS'))
 
     def write_image(self, image, seq):
         output_path = path.join(self.output_dir, seq + '.jpg')
@@ -48,7 +48,7 @@ class Recording(object):
         input_paths = sorted(glob(path.join(self.output_dir, '*')))
         output_path = path.join(tempfile.gettempdir(), name + '.gif')
         args = ['convert',
-                '-delay', str(int(100.0 / config.get('OUTPUT_FPS'))),
+                '-delay', str(int(100.0 / int(config.get('OUTPUT_FPS')))),
                 '-loop', '0']
         args += input_paths
         args += [output_path]
