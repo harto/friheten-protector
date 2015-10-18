@@ -56,3 +56,19 @@ class Frame(object):
                                             cv2.CHAIN_APPROX_SIMPLE)
         return [cv2.boundingRect(c) for c in contours
                 if cv2.contourArea(c) >= config.get('MIN_CHANGE_AREA')]
+
+    def overlay_rect(self, rect):
+        (x, y, w, h) = rect
+        cv2.rectangle(self.raw,
+                      (x, y),
+                      (x + w, y + h),
+                      color=(0, 0, 255),
+                      thickness=2)
+
+    def overlay_timestamp(self):
+        cv2.putText(self.raw,
+                    self.datetime.strftime('%Y-%m-%d %H:%M:%S'),
+                    (10, self.raw.shape[0] - 10),
+                    cv2.FONT_HERSHEY_PLAIN,
+                    1,
+                    (0, 0, 255))

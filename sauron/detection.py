@@ -1,3 +1,4 @@
+import cv2
 from datetime import datetime
 from sauron.recording import Recording
 from sauron.upload import upload_video
@@ -26,8 +27,7 @@ class MotionDetector(object):
             if self.state == self.WAITING:
                 print 'motion detected'
                 self.start_recording()
-            if self.recording.should_write(frame):
-                self.recording.write_frame(frame, diffs)
+            self.record_frame(frame, diffs)
         else:
             if self.state == self.CAPTURING:
                 self.finish_recording()
@@ -37,6 +37,12 @@ class MotionDetector(object):
         self.recording.write_frame(self.background)
         self.state = self.CAPTURING
         print 'recording...'
+
+    def record_frame(self, frame, diffs):
+        if not self.recording.should_write(frame): return
+        for diff in diffs: frame.overlay_rect(diff)
+        frame.overlay_timestamp()
+        self.recording.write_frame(frame)
 
     def finish_recording(self):
         name = datetime.now().strftime('recording-%Y%m%d%H%M%S')

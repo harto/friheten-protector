@@ -21,9 +21,8 @@ class Recording(object):
         self.first_write_time = None
         self.last_write_time = None
 
-    def write_frame(self, frame, rects = ()):
-        image = self.overlay(frame.raw.copy(), rects)
-        self.write_image(image, frame.datetime.strftime('%Y%m%d%H%M%S%f'))
+    def write_frame(self, frame):
+        self.write_image(frame.raw, frame.datetime.strftime('%Y%m%d%H%M%S%f'))
         if not self.first_write_time:
             self.first_write_time = frame.time
         self.last_write_time = frame.time
@@ -43,15 +42,6 @@ class Recording(object):
         output_path = path.join(self.output_dir, seq + '.jpg')
         #print 'writing %s' % output_path
         cv2.imwrite(output_path, image)
-
-    def overlay(self, image, rects):
-        for (x, y, w, h) in rects:
-            cv2.rectangle(image,
-                          (x, y),
-                          (x + w, y + h),
-                          color=(0, 0, 255),
-                          thickness=2)
-        return image
 
     def finalise(self, name):
         print 'finalising recording'
