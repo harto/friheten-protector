@@ -1,7 +1,7 @@
 import cv2
 from datetime import datetime
 from sauron.recording import Recording
-from sauron.upload import upload_video
+from sauron.upload import upload_file
 
 class MotionDetector(object):
 
@@ -48,7 +48,7 @@ class MotionDetector(object):
         name = datetime.now().strftime('recording-%Y%m%d%H%M%S')
         video_path = self.recording.finalise(name)
         try:
-            upload_video(video_path)
+            upload_file(video_path)
         except Exception as e:
             # Don't crash on upload failure
             print 'upload error: %s' % e
